@@ -72,19 +72,19 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// ── Hash password before saving ──────────────────
+// Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-// ── Instance method: compare passwords ──────────
+// Instance method: compare passwords
 userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// ── Virtual: public profile (safe to expose) ────
+// Virtual: public profile (safe to expose)
 userSchema.virtual("profile").get(function () {
   return {
     id:       this._id,

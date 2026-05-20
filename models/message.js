@@ -68,15 +68,15 @@ const messageSchema = new mongoose.Schema(
   }
 );
 
-// ── Index for fast message retrieval in a convo ──
+//  Index for fast message retrieval in a convo 
 messageSchema.index({ conversation: 1, createdAt: 1 });
 
-// ── Virtual: is it read by a specific user ───────
+//  Virtual: is it read by a specific user 
 messageSchema.methods.isReadBy = function (userId) {
   return this.readBy.some((id) => id.toString() === userId.toString());
 };
 
-// ── When soft-deleted, hide content ─────────────
+//  When soft-deleted, hide content 
 messageSchema.pre(/^find/, function (next) {
   // Don't filter by default — controllers decide; this is just a note
   next();

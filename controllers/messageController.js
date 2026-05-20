@@ -1,11 +1,11 @@
-const Message      = require("../models/Message");
-const Conversation = require("../models/Conversation");
+const Message      = require("../models/message");
+const Conversation = require("../models/conversation");
 const Notification = require("../models/Notification");
 const { uploadToCloudinary, deleteFromCloudinary } = require("../middleware/uploadMiddleware");
 const { sendNewMessageEmail } = require("../utils/email");
-const User = require("../models/User");
+const User = require("../models/user");
 
-// ── Helper: check participant access ────────────
+//  Helper: check participant access 
 const assertParticipant = async (conversationId, userId, role) => {
   const convo = await Conversation.findById(conversationId);
   if (!convo) return { error: "Conversation not found.", status: 404 };
@@ -18,7 +18,7 @@ const assertParticipant = async (conversationId, userId, role) => {
   return { convo };
 };
 
-// ── GET /api/conversations/:id/messages ──────────
+// GET /api/conversations/:id/messages 
 exports.getMessages = async (req, res) => {
   try {
     const { id: conversationId } = req.params;
@@ -42,7 +42,7 @@ exports.getMessages = async (req, res) => {
       isDeleted: false,
     })
       .populate("sender", "name avatar role")
-      .sort({ createdAt: 1 })           // oldest first
+      .sort({ createdAt: 1 })
       .skip(skip)
       .limit(Number(limit));
 
@@ -52,8 +52,7 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-// ── POST /api/conversations/:id/messages ─────────
-// Text or file message
+// POST /api/conversations/:id/messages 
 exports.sendMessage = async (req, res) => {
   try {
     const { id: conversationId } = req.params;

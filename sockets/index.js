@@ -1,7 +1,7 @@
 const jwt          = require("jsonwebtoken");
-const User         = require("../models/User");
-const Message      = require("../models/Message");
-const Conversation = require("../models/Conversation");
+const User         = require("../models/user");
+const Message      = require("../models/message");
+const Conversation = require("../models/conversation");
 const Notification = require("../models/Notification");
 const { sendNewMessageEmail } = require("../utils/email");
 
@@ -9,7 +9,7 @@ const { sendNewMessageEmail } = require("../utils/email");
 const onlineUsers = new Map();
 
 module.exports = (io) => {
-  // ── Socket auth middleware ───────────────────────
+  // Socket auth middleware 
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
@@ -30,7 +30,7 @@ module.exports = (io) => {
     const userId   = socket.user._id.toString();
     const userName = socket.user.name;
 
-    // ── Track online status ────────────────────────
+    //  Track online status 
     if (!onlineUsers.has(userId)) onlineUsers.set(userId, new Set());
     onlineUsers.get(userId).add(socket.id);
 
@@ -45,7 +45,7 @@ module.exports = (io) => {
 
     console.log(`🟢 ${userName} connected [${socket.id}] (${onlineUsers.get(userId).size} connections)`);
 
-    // ── Join a conversation room ───────────────────
+    //  Join a conversation room 
     socket.on("join:conversation", async (conversationId) => {
       try {
         // Verify user is a participant
@@ -63,12 +63,12 @@ module.exports = (io) => {
       }
     });
 
-    // ── Leave a conversation room ──────────────────
+    //  Leave a conversation room 
     socket.on("leave:conversation", (conversationId) => {
       socket.leave(conversationId);
     });
 
-    // ── Send a message ─────────────────────────────
+    //  Send a message 
     socket.on("message:send", async ({ conversationId, content, type = "text", fileUrl, fileName, fileSize, fileMimeType }) => {
       try {
         const convo = await Conversation.findById(conversationId);
@@ -84,14 +84,14 @@ module.exports = (io) => {
         // Persist message
         const message = await Message.create({
           conversation: conversationId,
-          sender:       userId,
-          content:      content?.trim() || "",
+          sender: userId,
+          content: content?.trim() || "",
           type,
-          fileUrl:      fileUrl   || null,
-          fileName:     fileName  || null,
-          fileSize:     fileSize  || null,
+          fileUrl: fileUrl || null,
+          fileName: fileName || null,
+          fileSize: fileSize  || null,
           fileMimeType: fileMimeType || null,
-          readBy:       [userId],
+          readBy: [userId],
         });
 
         // Update conversation
@@ -137,7 +137,7 @@ module.exports = (io) => {
       }
     });
 
-    // ── Read receipt ───────────────────────────────
+    //  Read receipt 
     socket.on("message:read", async ({ messageId, conversationId }) => {
       try {
         await Message.findByIdAndUpdate(messageId, {
@@ -153,7 +153,7 @@ module.exports = (io) => {
       }
     });
 
-    // ── Read all ───────────────────────────────────
+    //  Read all 
     socket.on("message:read-all", async ({ conversationId }) => {
       try {
         await Message.updateMany(
@@ -169,7 +169,7 @@ module.exports = (io) => {
       }
     });
 
-    // ── Typing indicators ──────────────────────────
+    //  Typing indicators 
     socket.on("typing:start", ({ conversationId }) => {
       socket.to(conversationId).emit("typing:start", {
         userId,
@@ -185,7 +185,7 @@ module.exports = (io) => {
       });
     });
 
-    // ── Message deleted ────────────────────────────
+    // Message deleted 
     socket.on("message:delete", async ({ messageId, conversationId }) => {
       try {
         const message = await Message.findById(messageId);
@@ -206,7 +206,7 @@ module.exports = (io) => {
       }
     });
 
-    // ── Online status query ────────────────────────
+    //  Online status query 
     socket.on("user:status", ({ userIds }) => {
       const statuses = {};
       for (const id of userIds) {
@@ -215,7 +215,7 @@ module.exports = (io) => {
       socket.emit("user:statuses", statuses);
     });
 
-    // ── Disconnect ─────────────────────────────────
+    //  Disconnect 
     socket.on("disconnect", async () => {
       const sockets = onlineUsers.get(userId);
       if (sockets) {

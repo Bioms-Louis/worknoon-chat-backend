@@ -1,6 +1,6 @@
-const Conversation = require("../models/Conversation");
-const Message      = require("../models/Message");
-const User         = require("../models/User");
+const Conversation = require("../models/conversation");
+const Message      = require("../models/message");
+const User         = require("../models/user");
 const Notification = require("../models/Notification");
 const { sendAssignedEmail } = require("../utils/email");
 

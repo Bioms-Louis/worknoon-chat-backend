@@ -1,7 +1,7 @@
 const jwt  = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/user");
 
-// ── Protect: verify JWT and attach user to req ───
+//  Protect: verify JWT and attach user to req 
 exports.protect = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -31,7 +31,7 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-// ── RestrictTo: allow only specific roles ────────
+//  RestrictTo: allow only specific roles 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -43,8 +43,7 @@ exports.restrictTo = (...roles) => {
   };
 };
 
-// ── Optional auth: attach user if token present ──
-// (used for routes that work for both guests and users)
+//  Optional auth: attach user if token present 
 exports.optionalAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;

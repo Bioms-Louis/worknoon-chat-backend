@@ -18,7 +18,7 @@ const server = http.createServer(app);
 //  Socket.IO 
 const io = new Server(server, {
   cors: {
-    origin:      process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL.split(','),
     credentials: true,
   },
   pingTimeout:  60000,
@@ -28,7 +28,7 @@ const io = new Server(server, {
 //  Core middleware 
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({
-  origin:      process.env.CLIENT_URL || "http://localhost:3000",
+  origin: process.env.CLIENT_URL.split(','),
   credentials: true,
 }));
 app.use(express.json({ limit: "10mb" }));

@@ -1,15 +1,15 @@
 const jwt  = require("jsonwebtoken");
 const { body } = require("express-validator");
-const User = require("../models/User");
+const User = require("../models/user");
 const { sendWelcomeEmail } = require("../utils/email");
 
-// ── Sign a JWT ───────────────────────────────────
+//  Sign a JWT 
 const signToken = (id, role) =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 
-// ── Send token response ──────────────────────────
+//  Send token response 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = signToken(user._id, user.role);
   res.status(statusCode).json({
@@ -26,7 +26,7 @@ const sendTokenResponse = (user, statusCode, res) => {
   });
 };
 
-// ── Validation rules ─────────────────────────────
+//  Validation rules 
 exports.signupValidation = [
   body("name")
     .trim()
@@ -48,7 +48,7 @@ exports.loginValidation = [
   body("password").notEmpty().withMessage("Password is required"),
 ];
 
-// ── POST /api/auth/signup ────────────────────────
+//  POST /api/auth/signup 
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
@@ -76,7 +76,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-// ── POST /api/auth/login ─────────────────────────
+//  POST /api/auth/login 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// ── GET /api/auth/me ─────────────────────────────
+//  GET /api/auth/me 
 exports.getMe = async (req, res) => {
   const user = await User.findById(req.user._id);
   res.json({
@@ -114,7 +114,7 @@ exports.getMe = async (req, res) => {
   });
 };
 
-// ── PATCH /api/auth/update-password ─────────────
+//  PATCH /api/auth/update-password 
 exports.updatePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;

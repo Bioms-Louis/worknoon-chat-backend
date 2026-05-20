@@ -53,11 +53,11 @@ const conversationSchema = new mongoose.Schema(
   }
 );
 
-// ── Index for fast participant lookups ───────────
+//  Index for fast participant lookups 
 conversationSchema.index({ participants: 1 });
 conversationSchema.index({ updatedAt: -1 });
 
-// ── Helper: increment unread for all except sender
+//  Helper: increment unread for all except sender
 conversationSchema.methods.incrementUnread = function (senderId) {
   for (const participantId of this.participants) {
     const key = participantId.toString();
@@ -68,7 +68,7 @@ conversationSchema.methods.incrementUnread = function (senderId) {
   }
 };
 
-// ── Helper: reset unread for a specific user ─────
+//  Helper: reset unread for a specific user 
 conversationSchema.methods.resetUnread = function (userId) {
   this.unreadCount.set(userId.toString(), 0);
 };
